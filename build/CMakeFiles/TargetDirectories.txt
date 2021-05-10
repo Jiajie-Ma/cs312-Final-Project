@@ -1,0 +1,5 @@
+/Users/jiajiema/cs312/particles/build/CMakeFiles/demo.dir
+/Users/jiajiema/cs312/particles/build/CMakeFiles/rebuild_cache.dir
+/Users/jiajiema/cs312/particles/build/CMakeFiles/edit_cache.dir
+/Users/jiajiema/cs312/particles/build/CMakeFiles/confetti.dir
+/Users/jiajiema/cs312/particles/build/CMakeFiles/billboard.dir
