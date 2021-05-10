@@ -34,7 +34,11 @@ We introduce the baseline/main algorithm the project adapts here, namely the fra
 
 ### Fractal Brownian Motion (fBM)
 
-A Brownian Motion (BM) is a movement of an object with random increments. In other words, it is a integral of white noises so that the result paths are random yet self-similar, i.e. a zoomed-in version of the path resembles the whole path. The usual way to implementing BM in computer science is to start with some periodic base function such as *f(x) = sin(x)*. As we add several more sine functions with different amplitudes and frequencies, 
+A Brownian Motion (BM) is a movement of an object with random increments. In other words, it is a integral of white noises so that the result paths are random yet self-similar, i.e. a zoomed-in version of the path resembles the whole path. The usual way to implementing BM in computer science is to start with some periodic base function such as *f(x) = sin(x)*. As we add several more sine functions with different amplitudes and frequencies (so-called *noises*), it results in a random path that becomes a fractal if we allowed the loop to continue forever.
+
+A fractional Brownian Motion is a Brownian Motion such that we keep a memory to keep track of the proess. In each iteration, the noise we add is based on the previous ones in terms of its frequency and amplitude. In other words, the increments are not completely independent from each other so that the result landscape is inherited with additional features. To control this process, we also keep a parameter *H* called the Hurst Exponent, ranging from 0 to 1. 
+
+When H = 1/2, the motion is reduced to BM so that every increment is independent from each other. When H = 1, the memory is positively correlated so that changes in a given direction will tend to produce future changes in the same direction and the path will then be smoother than a vanilla BM. Oppositely, the landscape becomes more curvy than BM and results in a complex landscape. It turns out by (physical) experiments that the best parameter value for most mountain landscape is H = 1.
 
 
 ### A variant of Fractal Brownian Motion
