@@ -11,8 +11,9 @@ The goal of this project is to adapt the existing fractional Brownian Motion Alg
 
 The existing (online) demos for terrain generations and rendering either rely on creating a noise texture with a third-party application in advance (then import for rendering) or applying the midpoint displacement algorithm for the heightmap generation. Some recent works in academia introduces the classic fractional Brownian Motion Algorithm (fBM) for a further randomness of the terrain landscape. Both methods are motivated by an interest in the fractal features of the terrains, i.e. they are self-similar. 
 
-![fBM-based terrain generation (https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf)](images/fBM.png)
-
+<p align="center">
+  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/fBM.png" />
+</p>
 
 In nature, however, the landscapes are not completely statistically homogenous like fractals (with existing lakes, flucial and glacial erosion, etc.). In fact, the most interesting (and so-called "wonder") terrains are heterogeneous in nature (see the two pictures above). Almost no existing demos have applied the algorithm to generate and render terrains in real world. 
 
