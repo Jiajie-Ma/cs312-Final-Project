@@ -12,7 +12,7 @@ The goal of this project is to adapt the existing fractional Brownian Motion Alg
 The existing (online) demos for terrain generations and rendering either rely on creating a noise texture with a third-party application in advance (then import for rendering) or applying the midpoint displacement algorithm for the heightmap generation. Some recent works in academia introduces the classic fractional Brownian Motion Algorithm (fBM) for a further randomness of the terrain landscape. Both methods are motivated by an interest in the fractal features of the terrains, i.e. they are self-similar. 
 
 <p align="center">
-  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/fBM.png" />
+  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/fBM.png" alt="fBM-based terrain generation (from: https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf)" />
 </p>
 
 In nature, however, the landscapes are not completely statistically homogenous like fractals (with existing lakes, flucial and glacial erosion, etc.). In fact, the most interesting (and so-called "wonder") terrains are heterogeneous in nature (see the two pictures above). Almost no existing demos have applied the algorithm to generate and render terrains in real world. 
@@ -42,13 +42,17 @@ We introduce the baseline/main algorithm the project adapts here, namely the fra
 
 A Brownian Motion (BM) is a movement of an object with random increments. In other words, it is a integral of white noises so that the result paths are random yet self-similar, i.e. a zoomed-in version of the path resembles the whole path. The usual way to implementing BM in computer science is to start with some periodic base function such as *f(x) = sin(x)*. As we add several more sine functions with different amplitudes and frequencies (so-called *noises*), it results in a random path that becomes a fractal if we allowed the loop to continue forever.
 
-![BM curve (from: https://thebookofshaders.com/13/)](images/BM.png)
+<p align="center">
+  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/BM.png" alt="BM curve (from: https://thebookofshaders.com/13/)" />
+</p>
 
 A fractional Brownian Motion is a Brownian Motion such that we keep a memory to keep track of the proess. In each iteration, the noise we add is based on the previous ones in terms of its frequency and amplitude. In other words, the increments are not completely independent from each other so that the result landscape is inherited with additional features. To control this process, we also keep a parameter *H* called the Hurst Exponent, ranging from 0 to 1. The pseudo-code for this increment process is shown below.
 
 When H = 1/2, the motion is reduced to BM so that every increment is independent from each other. When H = 1, the memory is positively correlated so that changes in a given direction will tend to produce future changes in the same direction and the path will then be smoother than a vanilla BM. Oppositely, the landscape becomes more curvy than BM and results in a complex landscape.
 
-![change of H (from: https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf)](images/valueH.png)
+<p align="center">
+  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/valueH.png" alt="change of H (from: https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf)" />
+</p>
 
 To generate a heightmap (i.e. a 2d image/matrix where each float pixel/entry represents the height of the point in the image) for a terrain, we start with a 2d periodic base function (typically Perlin noise) and increment noises as above. It turns out by (physical) experiments that the best parameter value for most mountain landscape is H = 1.
 
@@ -58,7 +62,9 @@ To generate a heightmap (i.e. a 2d image/matrix where each float pixel/entry rep
 
 To adapt to a terrain that is mixed with mountains and lakes, we may make the valley floors smooth by asserting that at the local minima of the base function, the noises we add to them should be damped to a low frequencies to make those places smooth. This method is proposed in https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf and the result with Perlin noise looks like:
 
-![adapted fBM algorithm](images/smoothfBM.png)
+<p align="center">
+  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/smoothfBM.png" alt="adapted fBM algorithm" />
+</p>
 
 Similar adaptation can be made to deal with other specific landscapes in real world (one of which is mentioned above).
 
@@ -67,11 +73,15 @@ Similar adaptation can be made to deal with other specific landscapes in real wo
 
 After the heightmap generation, it follows a routine procedure to generate a planar terrain by displacement. In particular, we start with a plane of grid (whose size depends on the resolution) in the 3d space, where each vertex has height 0 in the beginning. Then, we load the heightmap onto the grid by locate each vertex in the map and assign the height accordingly. 
 
-![grid (from: https://www.mbsoftworks.sk/tutorials/opengl4/016-heightmap-pt1-random-terrain/)](images/grid.png)
+<p align="center">
+  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/smoothfBM.png" alt="grid (from: https://www.mbsoftworks.sk/tutorials/opengl4/016-heightmap-pt1-random-terrain/)" />
+</p>
 
 Then, we triangulate the grid (i.e. generate a mesh representation of the plane) by tiling with triangle stripes. The normal at a vertex is taken to be the sum of the normals of each triangle attached to the vertex. Finally, it suffices to feed the data into the shader (e.g. mesh viewer) for visualization.
 
-![triangulation of grid (from: https://www.mbsoftworks.sk/tutorials/opengl4/016-heightmap-pt1-random-terrain/)](images/strip.png)
+<p align="center">
+  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/strip.png" alt="triangulation of grid (from: https://www.mbsoftworks.sk/tutorials/opengl4/016-heightmap-pt1-random-terrain/)" />
+</p>
 
 
 
