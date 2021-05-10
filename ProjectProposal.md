@@ -1,6 +1,6 @@
 # Down to Earth - Procedural Terrain Rendering with Amazing Landscapes
 
-The goal of this project is to adapt the existing fractional Brownian Motion Algrotihm (fBM) to generate and render real-world terrains with various landscapes. A potential final result would be to reconstruct marvelous terrains over the world (such as the following) using OpenGL.
+The goal of this project is to adapt the existing fractional Brownian Motion Algrotihm (fBM) to generate and render real-world terrains with various landscapes. A potential final result would be to reconstruct marvelous terrains over the world (such as the following) using OpenGL (see the raw document for references of pictures).
 
 ![Elephant Trunk Hill (from: https://zh.wikipedia.org/wiki/%E8%B1%A1%E9%BC%BB%E5%B1%B1)](images/guilin.jpeg)
 
