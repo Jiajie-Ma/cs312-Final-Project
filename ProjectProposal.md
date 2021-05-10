@@ -74,7 +74,7 @@ Similar adaptation can be made to deal with other specific landscapes in real wo
 After the heightmap generation, it follows a routine procedure to generate a planar terrain by displacement. In particular, we start with a plane of grid (whose size depends on the resolution) in the 3d space, where each vertex has height 0 in the beginning. Then, we load the heightmap onto the grid by locate each vertex in the map and assign the height accordingly. 
 
 <p align="center">
-  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/smoothfBM.png" alt="grid (from: https://www.mbsoftworks.sk/tutorials/opengl4/016-heightmap-pt1-random-terrain/)" />
+  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/grid.png" alt="grid (from: https://www.mbsoftworks.sk/tutorials/opengl4/016-heightmap-pt1-random-terrain/)" />
 </p>
 
 Then, we triangulate the grid (i.e. generate a mesh representation of the plane) by tiling with triangle stripes. The normal at a vertex is taken to be the sum of the normals of each triangle attached to the vertex. Finally, it suffices to feed the data into the shader (e.g. mesh viewer) for visualization.
