@@ -73,34 +73,32 @@ include_directories(${INCLUDE_DIRS})
 link_directories(${LIBRARY_DIRS})
 
 set(RENDER_SOURCES 
-    src/AGL.h
-    src/AGLM.h
-    src/AGLM.cpp
-    src/image.h
-    src/image.cpp
-    src/renderer.h
-    src/renderer.cpp
+    src/util/AGL.h
+    src/util/AGLM.h
+    src/util/AGLM.cpp
+    src/util/image.h
+    src/util/image.cpp
+    src/util/grid.h
+    src/util/grid.cpp
+    src/util/camera.h
+    src/util/camera.cpp
+    src/util/light.h
+    src/util/light.cpp
+    src/util/transformations.h
+    src/util/transformations.cpp
+    src/util/noise.h
     )
 
 set(PSYS_SOURCES 
-    src/confetti.h
-    src/confetti.cpp
-    src/myparticlesystem.h
-    src/myparticlesystem.cpp
-    src/particlesystem.h
-    src/particlesystem.cpp
+    src/test.h
+    src/test.cpp
     )
 
 set(SHADERS
-    shaders/billboard.fs
-    shaders/billboard.vs)
+    shaders/terrain.fs
+    shaders/terrain.vs
+    )
 
-add_executable(billboard src/main-billboard.cpp ${RENDER_SOURCES} ${SHADERS})
-target_link_libraries(billboard ${CORE})
-
-add_executable(confetti src/main-confetti.cpp ${PSYS_SOURCES} ${RENDER_SOURCES} ${SHADERS})
-target_link_libraries(confetti ${CORE})
-
-add_executable(demo src/main-demo.cpp ${PSYS_SOURCES} ${RENDER_SOURCES} ${SHADERS})
-target_link_libraries(demo ${CORE})
+add_executable(test src/test.cpp ${RENDER_SOURCES} ${SHADERS})
+target_link_libraries(test ${CORE})
 

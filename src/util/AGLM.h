@@ -1,4 +1,4 @@
-// Aline Normoyle, 2020
+// Aline Normoyle, Jiajie Ma, 2021
 // Convenience header for utilities and common includes 
 
 #pragma once
@@ -18,11 +18,9 @@ extern std::ostream& operator<<(std::ostream& o, const glm::vec3& v);
 extern std::ostream& operator<<(std::ostream& o, const glm::vec4& v);
 extern std::ostream& operator<<(std::ostream& o, const glm::vec2& v);
 
-namespace glm
-{
-   using point3 = glm::vec3;
-   using color = glm::vec3;
-}
+using namespace glm;
+using namespace std;
+
 const float pi = glm::pi<float>();
 const float infinity = std::numeric_limits<float>::infinity();
 
@@ -58,7 +56,6 @@ inline glm::vec3 random_unit_square()
    float y = random_float(-0.5,0.5);
    return glm::vec3(x, y, 0);
 }
-
 
 inline glm::vec3 random_unit_sphere() 
 {
@@ -110,4 +107,3 @@ inline bool near_zero(const glm::vec3& e)
    const auto s = 1e-8;
    return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
 }
-

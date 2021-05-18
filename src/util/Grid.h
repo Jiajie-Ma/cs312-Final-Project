@@ -3,7 +3,6 @@
 
 #include "AGL.h"
 #include "AGLM.h"
-#include "renderer.h"
 #include <string>
 #include <vector>
 
@@ -12,18 +11,25 @@ namespace agl {
     {
     public:
         Grid();
-        Grid(float size, float dim);
-        virtual ~Grid();
-
-        void draw();
+        ~Grid();
+        
+        void init(float l, float w, int lR, int wR);
+        void uploadToGPU(GLuint pid);
+        
+        int numVertices() const;
+        int numTriangles() const;
+        float* positions() const;
+        unsigned int* indices() const;
 
    protected:
-        float gridSize; // side length of the grid
-        float gridDim; // number of vertices per side
-        float nVertices; // number of vertices in total
-        static Renderer theRenderer;
-        GLuint mTexture;
-        BlendMode mBlendMode;
+        float gridLength; // length of the grid
+        float gridWidth; // width of the grid
+        int lRes; // number of vertices on the length side
+        int wRes; // number of vertices on the width side
+        int nVertices; // number of vertices in total
+        int nQuads; // number of triangles in tota
+        float* vertices; // list of vertices
+        unsigned int* quads; // list of faces
         bool mInitialized;
    };
 }

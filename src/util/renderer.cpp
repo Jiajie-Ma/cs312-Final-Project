@@ -35,10 +35,9 @@ bool Renderer::initialized() const
    return mInitialized;
 }
 
-
-vec3 Renderer::cameraPosition() const
+GLuint Renderer::program_id() const
 {
-   return mLookfrom;
+   return mShaderId;
 }
 
 void Renderer::init(const std::string& vertex, const std::string& fragment)
@@ -87,32 +86,12 @@ void Renderer::blendMode(BlendMode mode)
    }
 }
 
-void Renderer::perspective(float fovRadians, float aspect, float near, float far)
-{
-   mProjectionMatrix = glm::perspective(fovRadians, aspect, near, far);
-}
-
-void Renderer::ortho(float minx, float maxx, float miny, float maxy, float minz, float maxz)
-{
-   mProjectionMatrix = glm::ortho(minx, maxx, miny, maxy, minz, maxz);
-}
-
-void Renderer::lookAt(const vec3& lookfrom, const vec3& lookat)
-{
-   mLookfrom = lookfrom;
-   mViewMatrix = glm::lookAt(lookfrom, lookat, vec3(0,1,0));
-}
-
 void Renderer::begin(GLuint texIf, BlendMode mode)
 {
    assert(mInitialized);
 
    glUseProgram(mShaderId);
    blendMode(mode);
-
-   mat4 mvp = mProjectionMatrix * mViewMatrix;
-   glUniformMatrix4fv(glGetUniformLocation(mShaderId, "uVP"), 1, GL_FALSE, &mvp[0][0]);
-   glUniform3f(glGetUniformLocation(mShaderId, "uCameraPos"), mLookfrom[0], mLookfrom[1], mLookfrom[2]);
 
    GLuint locId = glGetUniformLocation(mShaderId, "image");
    glUniform1i(locId, 0);
@@ -122,7 +101,7 @@ void Renderer::begin(GLuint texIf, BlendMode mode)
 }
 
 void Renderer::quad(const glm::vec3& pos, const glm::vec4& color, float size)
-{-
+{
    assert(mInitialized);
    glUniform3f(glGetUniformLocation(mShaderId, "uOffset"), pos[0], pos[1], pos[2]);
    glUniform4f(glGetUniformLocation(mShaderId, "uColor"), color[0], color[1], color[2], color[3]);

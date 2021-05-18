@@ -3,7 +3,9 @@
 #define image_H_
 
 #include <iostream>
-#include "AGLM.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtc/epsilon.hpp>
 
 // This is a placeholder class
 // Feel free to replace this clas with your own image class
