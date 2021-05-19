@@ -11,6 +11,10 @@ inline float noise_hash(glm::vec2 p)
    return glm::fract((p3.x + p3.y) * p3.z);
 }
 
+inline float fade(float t) {
+    return t*t*t*(t*(t*6.0f-15.0f)+10.0f);
+}
+
 inline glm::vec2 classic_hash(int p)
 {
    int r = p % 3;
@@ -29,42 +33,6 @@ inline glm::vec2 classic_hash(int p)
    else{
       return glm::vec2(1.0f, -1.0f);
    }
-}
-
-inline float fade(float t) {
-    return t*t*t*(t*(t*6.0f-15.0f)+10.0f);
-}
-
-inline glm::vec3 value_noised(glm::vec2 p, int mode)
-{
-   glm::vec2 i = glm::floor(p);
-   glm::vec2 f = glm::fract(p);
-   glm::vec2 u;
-   glm::vec2 du;
-
-   if (mode == 1){
-      // quintic interpolation
-      u = f*f*f*(f*(f*6.0f-15.0f)+10.0f);
-      du = 30.0f*f*f*(f*(f-2.0f)+1.0f);
-   }
-   else{
-      // cubic interpolation
-      u = f*f*(3.0f-2.0f*f);
-      du = 6.0f*f*(1.0f-f);
-   }  
-    
-    float va = noise_hash( i + glm::vec2(0.0,0.0) );
-    float vb = noise_hash( i + glm::vec2(1.0,0.0) );
-    float vc = noise_hash( i + glm::vec2(0.0,1.0) );
-    float vd = noise_hash( i + glm::vec2(1.0,1.0) );
-    
-    float k0 = va;
-    float k1 = vb - va;
-    float k2 = vc - va;
-    float k4 = va - vb - vc + vd;
-
-    return glm::vec3( va+(vb-va)*u.x+(vc-va)*u.y+(va-vb-vc+vd)*u.x*u.y, // value
-                 du*(vec2(u.y, u.x)*(va-vb-vc+vd) + glm::vec2(vb,vc) - va) );     // derivative                
 }
 
 inline float classic_perlin(glm::vec2 p)
@@ -135,17 +103,107 @@ inline float fBM(vec2 p, float H = 1.0f, float f = 2.0f, int octaves = 8)
    return a;
 }
 
-inline glm::vec3 value_fBM(vec2 p, int mode = 1, float H = 1.0f, float f = 2.0f, int octaves = 8)
+inline vec4 permute(vec4 y){
+    vec4 x = y;
+    return ((x*34.0f)+1.0f)*x - 289.0f * floor(((x*34.0f)+1.0f)*x/289.0f);
+}
+
+inline vec2 fade(vec2 t) {
+    return t*t*t*(t*(t*6.0f-15.0f)+10.0f);
+}
+
+// Used instead of the gradient-based algorithm proposed in the slides
+// delivers better results without the need to precompute a gradiant lookup table
+// https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
+inline float perlinNoise(vec2 P){
+    vec4 Pi = floor(vec4(P,P)) + vec4(0.0f, 0.0f, 1.0f, 1.0f);
+    vec4 Pf = fract(vec4(P,P)) - vec4(0.0f, 0.0f, 1.0f, 1.0f);
+    Pi = Pi - 289.0f * floor(Pi/289.0f); // To avoid truncation effects in permutation
+    vec4 ix = vec4(Pi.x, Pi.z, Pi.x, Pi.z);
+    vec4 iy = vec4(Pi.y, Pi.y, Pi.w, Pi.w);
+    vec4 fx = vec4(Pf.x, Pf.z, Pf.x, Pf.z);
+    vec4 fy = vec4(Pf.y, Pf.y, Pf.w, Pf.w);
+    vec4 i = permute(permute(ix) + iy);
+    vec4 gx = 2.0f * fract(i * 0.0243902439f) - 1.0f; // 1/41 = 0.024...
+    vec4 gy = abs(gx) - 0.5f;
+    vec4 tx = floor(gx + 0.5f);
+    gx = gx - tx;
+    vec2 g00 = vec2(gx.x,gy.x);
+    vec2 g10 = vec2(gx.y,gy.y);
+    vec2 g01 = vec2(gx.z,gy.z);
+    vec2 g11 = vec2(gx.w,gy.w);
+    vec4 norm = 1.79284291400159f - 0.85373472095314f *
+            vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11));
+    g00 *= norm.x;
+    g01 *= norm.y;
+    g10 *= norm.z;
+    g11 *= norm.w;
+    float n00 = dot(g00, vec2(fx.x, fy.x));
+    float n10 = dot(g10, vec2(fx.y, fy.y));
+    float n01 = dot(g01, vec2(fx.z, fy.z));
+    float n11 = dot(g11, vec2(fx.w, fy.w));
+    vec2 fade_xy = fade(vec2(Pf.x, Pf.y));
+    vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
+    float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
+    return 2.3f *  n_xy;
+}
+
+inline float fbm(vec2 x) {
+    float v = 0.0;
+    float a = 0.1;
+    vec2 shift = vec2(100.0f);
+    mat2 rot = mat2(cos(0.5f), sin(0.5f), -sin(0.5f), cos(0.5f));
+    for (int i = 0; i < 8; ++i) {
+        v += a * perlinNoise(x);
+        x =  x * 2.0f + shift;
+        a *= 0.5f;
+    }
+    return v;
+}
+
+inline vec3 value_noised(vec2 p, int mode)
+{
+   vec2 i = floor(p);
+   vec2 f = fract(p);
+   vec2 u;
+   vec2 du;
+
+   if (mode == 1){
+      // quintic interpolation
+      u = f*f*f*(f*(f*6.0f-15.0f)+10.0f);
+      du = 30.0f*f*f*(f*(f-2.0f)+1.0f);
+   }
+   else{
+      // cubic interpolation
+      u = f*f*(3.0f-2.0f*f);
+      du = 6.0f*f*(1.0f-f);
+   }  
+    
+    float va = noise_hash( i + vec2(0.0,0.0) );
+    float vb = noise_hash( i + vec2(1.0,0.0) );
+    float vc = noise_hash( i + vec2(0.0,1.0) );
+    float vd = noise_hash( i + vec2(1.0,1.0) );
+    
+    float k0 = va;
+    float k1 = vb - va;
+    float k2 = vc - va;
+    float k4 = va - vb - vc + vd;
+
+    return vec3( va+(vb-va)*u.x+(vc-va)*u.y+(va-vb-vc+vd)*u.x*u.y, // value
+                 du*(vec2(u.y, u.x)*(va-vb-vc+vd) + vec2(vb,vc) - va) );     // derivative                
+}
+
+inline vec3 value_fBM(vec2 p, int mode, float H, float f, int octaves)
 {
    // initiation
    float s = pow(2.0f, -H);
    float a = 0.0f;
    float b = 1.0f;
-   glm::vec2 d = vec2(0.0f);
+   vec2 d = vec2(0.0f);
    // Rotate to reduce axial bias
-   glm::mat2 rot = glm::mat2(cos(0.5f), sin(0.5f),
+   mat2 rot = mat2(cos(0.5f), sin(0.5f),
                     -sin(0.5f), cos(0.5f));
-   glm::vec2 shift = glm::vec2(100.0f);
+   vec2 shift = vec2(100.0f);
 
    for (int i = 0; i < octaves; i++)
    {
@@ -157,26 +215,39 @@ inline glm::vec3 value_fBM(vec2 p, int mode = 1, float H = 1.0f, float f = 2.0f,
       p += shift;
    }
 
-   return glm::vec3(a, d);
+   return vec3(a, d);
 }
 
-vec3 getTerrainHeight(vec2 pos, int mode, float H, float f, int octaves, float density, float height){
-    vec2 p = pos*density;
-    vec3 noise = value_fBM(p, mode, H, f, octaves);
-    return vec3((0.5f * noise.x + 0.5f)* height, vec2(noise.y,noise.z) * 0.5f * height);
-}
+// with the help of https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf
+inline float hyrbidMultifractal(vec2 point, float H, float lacunarity, int octaves, float offset){
+    vec2 p =  point;
+    float frequency, result, signal, weight;
+    int i;
+    float exponent_array[8];
+    frequency = 1.0;
+    //filling the exponent array
+    for(i=0; i<octaves; ++i){
+        exponent_array[i] = pow(frequency, -H);
+        frequency *= lacunarity;
+    }
 
-vec2 getUV(vec3 pos, float gridwidth, float gridlength){
-   vec2 p = vec2(0.0f);
+    float noise = fbm(p);
+    signal = offset + noise;
+    signal = signal * exponent_array[0];
+    result = signal;
+    weight = result;
+    p = p * lacunarity;
 
-   p.x = (pos.x + gridwidth/2.0f)/gridwidth;
-   p.y = (pos.y + gridlength/2.0f)/gridlength;
-
-   return p;
-}
-
-float gridPos(vec3 pos, float mode, float H, float f, int octaves, float density, float height, float gridwidth, float gridlength){
-   vec2 uv = getUV(pos, gridwidth, gridlength);
-   float h = getTerrainHeight(uv, mode, H, f, octaves, density, height).x;
-   return h;
+    for( i=1; i<octaves; i++ ) {
+       if (weight > 1.0){
+          weight = 1.0;
+       }
+       float noise = fbm(p);
+       signal = offset + noise;
+       signal = signal * exponent_array[i];
+       result += signal * weight;
+       weight *= signal;
+       p = p * lacunarity;
+    }
+    return result;
 }

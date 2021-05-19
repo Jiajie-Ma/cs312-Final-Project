@@ -12,6 +12,7 @@ namespace agl {
       ~Camera();
 
       void lookAt(const glm::vec3& lookfrom, const glm::vec3& lookat, const glm::vec3& up);
+      void lookAtMirrored(const glm::vec3& lookfrom, const glm::vec3& lookat, const glm::vec3& up);
       void updateCamPos(const vec3& new_pos);
       void updateViewMatrix();
 
@@ -21,6 +22,7 @@ namespace agl {
       glm::vec3 getRight() const;
       glm::vec3 getDirection() const;
       glm::mat4 getViewMatrix() const;
+      glm::mat4 getViewMatrixMirrored() const;
 
       void uploadToGPU(GLuint pid);
 
@@ -31,6 +33,7 @@ namespace agl {
       vec3 mRight;
       vec3 cam_dir;
       mat4 mViewMatrix;
+      mat4 mViewMatrix_mirrored;
    };
 }
 

@@ -6,12 +6,13 @@ using namespace std;
 
 Camera::Camera()
 {
-   mPos = vec3(0.0f, 0.0f, 3.0f);
+   mPos = vec3(0.0f, 0.0f, 1.0f);
    mUp = vec3(0.0f, 1.0f, 0.0f);
    mLook = vec3(0.0f, 0.0f, 0.0f);
    cam_dir = vec3(mLook - mPos);
    mRight = glm::normalize(glm::cross(mLook, mUp));
    mViewMatrix = glm::lookAt(mPos, mLook, mUp);
+   mViewMatrix_mirrored = glm::lookAt(vec3(mPos.x, mPos.y, -mPos.z), vec3(mLook.x, mLook.y, -mLook.z), mUp);
 }
 
 Camera::~Camera()
@@ -29,12 +30,24 @@ void Camera::lookAt(const vec3& lookfrom, const vec3& lookat, const vec3& up)
    mViewMatrix = glm::lookAt(mPos, mLook, mUp);
 }
 
+void Camera::lookAtMirrored(const vec3& lookfrom, const vec3& lookat, const vec3& up) {
+
+   mPos= lookfrom;
+   mLook = lookat;
+   mUp = up;
+   cam_dir = vec3(mLook - mPos);
+   mRight = glm::normalize(glm::cross(mLook, mUp));
+
+   mViewMatrix_mirrored = glm::lookAt(vec3(mPos.x, mPos.y, -mPos.z), vec3(mLook.x, mLook.y, -mLook.z), up);
+}
+
 void Camera::updateCamPos(const vec3& new_pos){
     mPos = new_pos;
 }
 
 void Camera::updateViewMatrix(){
    mViewMatrix = glm::lookAt(mPos, mLook, mUp);
+   mViewMatrix_mirrored = glm::lookAt(vec3(mPos.x, mPos.y, -mPos.z), vec3(mLook.x, mLook.y, -mLook.z), mUp);
 }
 
 void Camera::uploadToGPU(GLuint pid)
@@ -70,4 +83,9 @@ vec3 Camera::getDirection() const
 mat4 Camera::getViewMatrix() const
 {
    return mViewMatrix;
+}
+
+mat4 Camera::getViewMatrixMirrored() const
+{
+   return mViewMatrix_mirrored;
 }

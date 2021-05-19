@@ -90,15 +90,24 @@ set(RENDER_SOURCES
     )
 
 set(PSYS_SOURCES 
-    src/test.h
-    src/test.cpp
+    src/main.h
+    src/main.cpp
+    src/terrain_fbm.h
+    src/terrain_fbm.cpp
     )
 
 set(SHADERS
     shaders/terrain.fs
     shaders/terrain.vs
+    shaders/terrain_plain.fs
+    shaders/terrain_plain.vs
+    shaders/sky.fs
+    shaders/sky.vs
     )
 
-add_executable(test src/test.cpp ${RENDER_SOURCES} ${SHADERS})
-target_link_libraries(test ${CORE})
+add_executable(main src/main.cpp ${RENDER_SOURCES} ${SHADERS})
+target_link_libraries(main ${CORE})
+
+add_executable(terrain-fbm src/terrain_fbm.cpp ${RENDER_SOURCES} ${SHADERS})
+target_link_libraries(terrain-fbm ${CORE})
 

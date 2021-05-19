@@ -13,7 +13,7 @@ namespace agl {
         Light();
         virtual ~Light();
 
-        void draw(GLuint pid);
+        void uploadToGPU(GLuint pid);
         void updateLightPos(float t);
 
         vec3 getLightPos() const;
