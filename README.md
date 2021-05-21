@@ -225,6 +225,4 @@ Left-drag orbits the camera around the terrain; SHIFT-left drag zooms in and out
 
 ## Animation result
 
-<p align="center">
-  <img src="https://github.com/Jiajie-Ma/cs312-Final-Project/blob/main/images/animedemo.gif" />
-</p>
+![Animation](images/animedemo.png)
