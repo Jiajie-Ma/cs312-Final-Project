@@ -152,6 +152,7 @@ inline float fbm(vec2 x) {
     float v = 0.0;
     float a = 0.1;
     vec2 shift = vec2(100.0f);
+    // Rotate to reduce axial bias
     mat2 rot = mat2(cos(0.5f), sin(0.5f), -sin(0.5f), cos(0.5f));
     for (int i = 0; i < 8; ++i) {
         v += a * perlinNoise(x);

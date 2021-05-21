@@ -120,8 +120,8 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
             dist = 1.0f;
          }
 
-         if (elevation > 0.0f && elevation < 20.0f  && dist >8.0f){
-            dist = 8.0f;
+         if (elevation > 0.0f && elevation < 20.0f  && dist >7.0f){
+            dist = 7.0f;
          }
       }
       else{
@@ -142,7 +142,7 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
             elevation = -89.9f;
          } 
 
-         if(dist > 8.0f && elevation < 0.0f){
+         if(dist > 7.0f && elevation < 0.0f){
             elevation = 0.0f;
          }
       }

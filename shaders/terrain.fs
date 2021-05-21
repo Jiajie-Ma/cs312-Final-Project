@@ -18,7 +18,7 @@ uniform float gridlength, gridwidth, time, max_height;
 uniform int lRes, wRes, window_w, window_h;
 
 vec3 kd;
-float snow_height = 0.8 * 15-11.0f;
+float snow_height = 0.8 * 15 - 11.0f;
 float grass_height = 0.5*15 - 11.0f;
 float mix_zone = 0.1 * 15;
 
@@ -60,9 +60,10 @@ vec4 compute_normal(vec4 current_pos) {
     return vec4(normalize(cross(dx.xyz, dy.xyz)), 1.0);
 }
 
-vec3 applyFog(vec3 rgb, float gDistance, vec3 rayDir, vec3 sunDir ){
-    float b = 0.02;
-    float fogAmount = 1.0 - exp( gDistance*b );
+// rendering ideas adapted from https://github.com/jadkhoury/ProceduralTerrain
+vec3 applyFog(vec3 rgb, float distance, vec3 rayDir, vec3 sunDir ){
+    float b = 0.03;
+    float fogAmount = 1.0 - exp( distance*b );
     float sunAmount = max( dot( rayDir, sunDir ), 0.0 );
     vec3  fogColor  = mix(vec3(0.5,0.6,0.7), vec3(1.0,0.9,0.7), pow(sunAmount,8.0));
     return mix( rgb, fogColor, fogAmount );
@@ -92,7 +93,6 @@ vec3 computeDayColor(){
     coef = smoothstep(0.90, 0.98, angleDiff);
     vec3 snowgrass = mix(rockgrass, snow, coef);
 
-
     if (height > snow_height + mix_zone){
         kd = snow;
     } else if (height > snow_height - mix_zone) {
@@ -106,12 +106,6 @@ vec3 computeDayColor(){
     } else {
         kd = sand;
     }
-
-    vec3 ambiant = kd * l_a;
-
-    float nl = max(0.0, dot(n,l));
-    float shadowCoef = 1.0;
-    vec3 diffuse = kd * nl * l_d;
 
     result = vec3(applyFog(kd, dist, -v, l));
 
@@ -127,11 +121,12 @@ vec3 computeNightColor(){
 }
 
 void main() {
+    
    float sunHeight = light_pos.z/100.0;
    vec3 day = computeDayColor();
    vec3 night = computeNightColor();
    float coef = smoothstep(-0.5, 0.0, sunHeight);
    vec3 color = mix(night, day, coef);
 
-   FragColor = vec4(color, 1.0);
+   FragColor = vec4(color, 1.0); 
 }

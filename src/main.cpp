@@ -180,6 +180,7 @@ void init(GLFWwindow* window) {
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the buffers
 
+
     glUseProgram(sky_program_id_);
     glBindVertexArray(sky_vaoId);
 
